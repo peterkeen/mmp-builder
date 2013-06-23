@@ -3,6 +3,7 @@ GEM
   specs:
     docverter (0.0.7)
       rest-client (~> 1.6.7)
+    highline (1.6.19)
     mime-types (1.23)
     posix-spawn (0.3.6)
     pygments.rb (0.4.2)
@@ -18,5 +19,6 @@ PLATFORMS
 
 DEPENDENCIES
   docverter
+  highline
   pygments.rb
   redcarpet

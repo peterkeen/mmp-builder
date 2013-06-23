@@ -4,6 +4,8 @@ require 'redcarpet'
 require 'pygments'
 require 'erb'
 require 'docverter'
+require 'highline'
+require 'json'
 
 task :build => [:build_pdf, :build_mobi, :build_epub]
 task :check => [:count_hours, :count, :check_tics, :check_todos]
@@ -208,3 +210,11 @@ task :build_epub => :build_common do
 end
 
 
+task :upload => [:clean, :build] do
+  hl = HighLine.new
+  upload_password = hl.ask("Password: ") { |q| q.echo = false }
+  Dir.glob("build/*").each do |file|
+    json = `curl -s -k -u admin:#{upload_password} -F files[]=@#{file} https://files.bugsplat.info/upload`
+    puts JSON.parse(json)['files'][0]['url']
+  end
+end
