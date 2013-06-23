@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset="utf-8">
+<title>Mastering Modern Payments: Using Stripe with Rails</title>
+<style type="text/css">
+  div.page_footer {
+    display: block;
+    text-align: center;
+    font-size: 80%;
+    color: #333;
+    font-family: 'Lora';
+    position: running(footer);
+  }
+  div.page_footer .page_number:after {
+    content: counter(page);
+  }
+  @page {
+    size: 9.25in 7in;
+    margin: 7.5%;
+
+    @bottom-right {
+      content: element(footer);
+    }
+
+    @bottom-left {
+      content: "";
+    }
+  } 
+
+  @page :first {
+    size: 9.25in 7in;
+    margin: 10%;
+
+    @bottom-right {
+      content: "";
+    }
+
+    @bottom-left {
+      content: "";
+    }
+  }
+
+  .cover {
+    page-break-after: always;
+  }
+
+  h1,h2,h3,h4 {
+    font-family: 'Droid Sans';
+  }
+
+  h1 {
+    page-break-before: always;
+    border-bottom: 1px solid #CCC;
+    padding-bottom: 0.5em;
+    margin-top: 2em;
+  }
+
+  body {
+    font-family: 'Lora';
+  }
+
+  code,pre {
+    font-family: 'Inconsolata';
+  }
+
+  code {
+    padding: 2px 4px;
+    background-color: #f7f7f9;
+  }
+
+  pre {
+    page-break-inside:avoid;
+    orphans: 0;
+    widows: 0;
+    display: block;
+    padding: 9.5px;
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 20px;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: pre;
+    white-space: pre-wrap;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+  }
+
+  .cover .title {
+    font-family: helvetica, arial, sans-serif;
+    border-bottom: 1px solid #CCC;
+    padding-bottom: 0.5em;
+    font-size: 2em;
+  }
+
+  .cover .subtitle {
+    font-family: helvetica, arial, sans-serif;
+    font-size: 1.5em;
+  }
+
+  .cover .author {
+    font-family: 'Droid Sans', helvetica, arial, sans-serif;
+    font-size: 1.5em;
+    padding-top: 1em;
+  }
+  <%= Pygments.css %>
+
+  @font-face {
+    font-family: 'Droid Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: url('droid_sans.ttf');
+    -fs-pdf-font-embed: embed;
+    -fs-pdf-font-encoding: Identity-H;
+  }
+  @font-face {
+    font-family: 'Lora';
+    font-style: normal;
+    font-weight: 400;
+    src: url('Lora-Regular.ttf');
+    -fs-pdf-font-embed: embed;
+    -fs-pdf-font-encoding: Identity-H;
+  }
+  @font-face {
+    font-family: 'Inconsolata';
+    font-style: normal;
+    font-weight: 400;
+    src: url('Inconsolata-Regular.ttf');
+    -fs-pdf-font-embed: embed;
+    -fs-pdf-font-encoding: Identity-H;
+  }
+</style>
+</head>
+<body>
+<div class="page_footer"><span class="page_number"></span></div>
+<div id="container">
+  <div id="content-container">
+    <div id="content">
+      <%= @content %>
+    </div>
+  </div>
+</div>
+</body>
+</html>
