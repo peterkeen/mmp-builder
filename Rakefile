@@ -5,7 +5,9 @@ require 'pygments'
 require 'erb'
 require 'docverter'
 
-task :default => [:count, :check_tics, :check_todos]
+task :build => [:build_pdf, :build_mobi, :build_epub]
+task :check => [:count, :check_tics, :check_todos]
+task :default => [:check, :build]
 
 def with_book_dir
   Dir.chdir("/Users/peter/book") do
@@ -192,4 +194,4 @@ task :build_epub => :build_common do
   end
 end
 
-task :build => [:build_pdf, :build_mobi, :build_epub]
+
