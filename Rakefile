@@ -6,13 +6,26 @@ require 'erb'
 require 'docverter'
 
 task :build => [:build_pdf, :build_mobi, :build_epub]
-task :check => [:count, :check_tics, :check_todos]
+task :check => [:count_hours, :count, :check_tics, :check_todos]
 task :default => [:check, :build]
 
 def with_book_dir
   Dir.chdir("/Users/peter/book") do
     yield
   end
+end
+
+task :count_hours do
+  hours = 0
+  with_book_dir do
+    File.open("_hours.md").each do |line|
+      if line =~ /\(([\d\.]+)\)/
+        hours += $1.to_f
+      end
+    end
+  end
+
+  puts "Total hours: #{hours}"
 end
 
 task :count do
