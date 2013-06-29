@@ -210,7 +210,7 @@ task :build_epub => :build_common do
 end
 
 
-task :upload => [:clean, :build] do
+task :upload => [:check, :clean, :build] do
   hl = HighLine.new
   upload_password = hl.ask("Password: ") { |q| q.echo = false }
   Dir.glob("build/*").each do |file|
