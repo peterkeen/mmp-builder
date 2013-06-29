@@ -17,6 +17,7 @@ def with_book_dir
   end
 end
 
+desc "Count the number of hours spent writing"
 task :count_hours do
   hours = 0
   with_book_dir do
@@ -30,6 +31,7 @@ task :count_hours do
   puts "Total hours: #{hours}"
 end
 
+desc "Count words"
 task :count do
   with_book_dir do
     goal_count = 30000.0
@@ -68,6 +70,7 @@ task :count do
   end
 end
 
+desc "Check for common annoying things"
 task :check_tics do
   with_book_dir do
     count = 0
@@ -87,6 +90,7 @@ task :check_tics do
   end
 end
 
+desc "Check for any TODO messages"
 task :check_todos do
   with_book_dir do
     count = 0
@@ -117,10 +121,12 @@ class HTMLwithPygments < Redcarpet::Render::HTML
   end
 end
 
+task "Clean the build directory"
 task :clean do
   sh("rm -rf build")
 end
 
+task "Common build setup"
 task :build_common do
   puts "Setting up common stuff"
   Docverter.base_url = 'http://c.docverter.com'
@@ -140,6 +146,7 @@ task :build_common do
   FileUtils.mkdir_p("build")
 end
 
+desc "Build a PDF"
 task :build_pdf => :build_common do
   puts "Building PDF"
   Docverter.base_url = 'http://c.docverter.com'
@@ -183,6 +190,7 @@ task :build_pdf => :build_common do
   end
 end
 
+desc "Build a mobi"
 task :build_mobi => :build_common do
   puts "Building MOBI"
   File.open("build/mastering-modern-payments-#{@raw_contents_hash}.mobi", "w+") do |f|
@@ -196,6 +204,7 @@ task :build_mobi => :build_common do
   end
 end
 
+desc "Build an epub"
 task :build_epub => :build_common do
   puts "Building EPUB"
   File.open("build/mastering-modern-payments-#{@raw_contents_hash}.epub", "w+") do |f|
@@ -209,7 +218,7 @@ task :build_epub => :build_common do
   end
 end
 
-
+desc "Build everything and upload it"
 task :upload => [:check, :clean, :build] do
   hl = HighLine.new
   upload_password = hl.ask("Password: ") { |q| q.echo = false }
