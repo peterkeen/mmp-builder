@@ -11,10 +11,9 @@ desc "Build everything"
 task :build => ['build:pdf', 'build:mobi', 'build:epub']
 
 desc "Basic sanity check"
-task :check => ['check:count_hours', 'check:count', 'check:tics', 'check:todos']
+task :check => ['check:count_hours', 'check:count', 'check:tics', 'check:todos', 'check:syntax']
 
 desc "Sanity checks plus syntax check"
-task 'check:full' => ['check', 'check:syntax']
 
 task :default => :check
 
@@ -25,27 +24,20 @@ def with_book_dir
 end
 
 class RubySyntaxChecker < Redcarpet::Render::Base
+
   attr_reader :failed
 
   def check_ruby(ruby_code, raw)
-    IO.popen ['ruby', '-Ku', '-c'], 'r+' do |io|
-      io.puts ruby_code
-      io.close
-    end
-    if $? && $?.exitstatus != 0
-      puts raw
-      @failed = true
-    end
+    eval("BEGIN {return true}\n#{ruby_code}", nil, '<check>', 0)
+  rescue SyntaxError
+    puts raw
+    puts $!.message
+    @failed = true
   end
-
 
   def block_code(code, language)
     if language == 'ruby'
       check_ruby(code, code)
-      ""
-    end
-    if language == 'erb'
-      check_ruby(ERB.new(code), code)
       ""
     end
   end
@@ -127,7 +119,6 @@ namespace :check do
 
   desc "Check syntax of ruby blocks"
   task :syntax do
-    puts "Running syntax check"
     with_book_dir do
       Dir.glob("*.md").each do |file|
         next if file =~ /^_/
@@ -189,6 +180,7 @@ namespace :build do
     with_book_dir do
       chapters = File.read('chapters').split("\n")
       chapters.each do |chapter|
+        next if ENV['chapter'] && chapter != ENV['chapter']
         @raw_contents << File.read(chapter + ".md")
         @raw_contents << "\n\n"
       end
@@ -217,12 +209,18 @@ namespace :build do
     body = renderer.render(@raw_contents)
     toc = toc_renderer.render(@raw_contents).gsub('&#39;', "'")
     cover = ""
+    cover_sample = ""
 
     with_book_dir do
       cover = File.read('cover.md')
+      cover_sample = File.read('cover_sample.md')
     end
 
-    @content = cover + toc + body
+    if ENV['chapter']
+      @content = cover_sample + body
+    else
+      @content = cover + toc + body
+    end
 
     @html = ERB.new(File.read('template.erb')).result(binding)
 
@@ -270,14 +268,16 @@ namespace :build do
       f.write mobi
     end
   end
-end
 
-desc "Build everything and upload it"
-task :publish => ['check:full', 'build:clean', :build] do
-  hl = HighLine.new
-  upload_password = hl.ask("Password: ") { |q| q.echo = false }
-  Dir.glob("build/*").each do |file|
-    json = `curl -s -k -u admin:#{upload_password} -F files[]=@#{file} https://files.bugsplat.info/upload`
-    puts JSON.parse(json)['files'][0]['url']
+  task :upload do
+    hl = HighLine.new
+    upload_password = hl.ask("Password: ") { |q| q.echo = false }
+    Dir.glob("build/*").each do |file|
+      json = `curl -s -k -u admin:#{upload_password} -F files[]=@#{file} https://files.bugsplat.info/upload`
+      puts JSON.parse(json)['files'][0]['url']
+    end
   end
 end
+
+task :publish => ['check:full', 'build:clean', :build, 'build:upload']
+
