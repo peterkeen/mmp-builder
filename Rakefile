@@ -119,6 +119,7 @@ namespace :check do
       goal_count = 30000.0
 
       code_count = 0
+      block_count = 0
       word_count = 0
 
       Dir.glob('*.md').each do |file|
@@ -126,11 +127,15 @@ namespace :check do
 
         file_code_count = 0
         file_word_count = 0
+        file_block_count = 0
 
         in_code_block = false
         File.open(file).each do |line|
           if line =~ /^```/
             in_code_block = !in_code_block
+            if in_code_block
+              file_block_count += 1
+            end
             next
           end
 
@@ -143,12 +148,13 @@ namespace :check do
 
         code_count += file_code_count
         word_count += file_word_count
+        block_count += file_block_count
 
-        puts "#{file}: #{file_word_count} #{file_code_count}"
+        puts "#{file}: #{file_word_count} #{file_code_count} #{file_block_count}"
       end
 
       goal_pct = (word_count / goal_count * 100).round
-      puts "overall: #{word_count} #{code_count} (#{goal_pct}%)"
+      puts "overall: #{word_count} #{code_count} #{block_count} (#{goal_pct}%)"
     end
   end
 
