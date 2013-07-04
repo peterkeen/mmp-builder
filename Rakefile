@@ -1,6 +1,7 @@
 require 'bundler/setup'
 require 'digest/sha1'
 require 'redcarpet'
+require 'redcarpet/render_strip'
 require 'pygments'
 require 'erb'
 require 'docverter'
@@ -54,6 +55,46 @@ class LinkChecker < Redcarpet::Render::Base
     rescue Errno::ECONNREFUSED
       puts "Connection refused: #{href} #{title} #{content}"
     end
+  end
+end
+
+class HTMLWithChapterNumberingAndPygments < Redcarpet::Render::HTML
+  def header(text, header_level)
+    if header_level == 1
+      @counter ||= 0
+      @counter += 1
+      "<h1 id=\"chapter_#{@counter}\"><small>Chapter #{@counter}</small><br>#{text}</h1>\n"
+    else
+      "<h#{header_level}>#{text}</h#{header_level}>\n"
+    end
+  end
+  def block_code(code, language)
+    Pygments.highlight(code, :lexer => language)
+  end
+
+  def postprocess(document)
+    document.gsub('&#39;', "'")
+  end
+end
+
+class TOCWithChapterNumbering < Redcarpet::Render::StripDown
+  def header(text, header_level)
+    return unless header_level == 1
+    @chapters ||= []
+    @chapters << text
+    ""
+  end
+
+  def postprocess(document)
+    items = []
+    @chapters.each_with_index do |text, i|
+      items << "  <li><a href=\"#chapter_#{(i+1).to_s}\">#{text}</a></li>"
+    end
+    return <<HERE
+<ol>
+#{items.join("\n")}
+</ol>
+HERE
   end
 end
 
@@ -180,16 +221,6 @@ namespace :check do
   end
 end
 
-class HTMLwithPygments < Redcarpet::Render::HTML
-  def block_code(code, language)
-    Pygments.highlight(code, :lexer => language)
-  end
-
-  def postprocess(document)
-    document.gsub('&#39;', "'")
-  end
-end
-
 namespace :build do
   desc "Clean the build directory"
   task :clean do
@@ -217,19 +248,46 @@ namespace :build do
     FileUtils.mkdir_p("build")
   end
 
+  task :html => 'build:common' do
+    puts "Building HTML"
+    renderer = Redcarpet::Markdown.new(
+      HTMLWithChapterNumberingAndPygments.new,
+      :fenced_code_blocks => true,
+      :tables => true,
+    )
+
+    toc_renderer = Redcarpet::Markdown.new(
+      TOCWithChapterNumbering
+    )
+
+    body = renderer.render(@raw_contents)
+    toc = toc_renderer.render(@raw_contents)
+    cover = ""
+
+    with_book_dir do
+      cover = File.read('cover.md')
+    end
+
+    @content = cover + toc + body
+    @html = ERB.new(File.read('site_template.erb')).result(binding)
+    File.open("build/mastering-modern-payments-#{@raw_contents_hash}.html", "w+") do |f|
+      f.write @html
+    end
+  end
+
   desc "Build a PDF"
   task :pdf => 'build:common' do
     puts "Building PDF"
     Docverter.base_url = 'http://c.docverter.com'
 
     renderer = Redcarpet::Markdown.new(
-      HTMLwithPygments.new(:with_toc_data => true),
+      HTMLWithChapterNumberingAndPygments.new(:with_toc_data => true),
       :fenced_code_blocks => true,
       :tables => true,
     )
 
     toc_renderer = Redcarpet::Markdown.new(
-      Redcarpet::Render::HTML_TOC
+      TOCWithChapterNumbering
     )
 
     body = renderer.render(@raw_contents)
@@ -245,7 +303,7 @@ namespace :build do
     if ENV['chapter']
       @content = cover_sample + body
     else
-      @content = cover + toc + body
+      @content = cover + "<h1>Table of Contents</h1>" + toc + body
     end
 
     @html = ERB.new(File.read('template.erb')).result(binding)
