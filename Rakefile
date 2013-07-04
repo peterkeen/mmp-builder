@@ -265,7 +265,7 @@ namespace :build do
     cover = ""
 
     with_book_dir do
-      cover = File.read('cover.md')
+      cover = File.read('_cover.md')
     end
 
     @content = cover + toc + body
@@ -296,8 +296,8 @@ namespace :build do
     cover_sample = ""
 
     with_book_dir do
-      cover = File.read('cover.md')
-      cover_sample = File.read('cover_sample.md')
+      cover = File.read('_cover.md')
+      cover_sample = File.read('_cover_sample.md')
     end
 
     if ENV['chapter']
