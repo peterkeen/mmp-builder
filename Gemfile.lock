@@ -4,7 +4,12 @@ GEM
     docverter (0.0.7)
       rest-client (~> 1.6.7)
     highline (1.6.19)
+    httparty (0.11.0)
+      multi_json (~> 1.0)
+      multi_xml (>= 0.5.2)
     mime-types (1.23)
+    multi_json (1.7.7)
+    multi_xml (0.5.4)
     posix-spawn (0.3.6)
     pygments.rb (0.4.2)
       posix-spawn (~> 0.3.6)
@@ -20,5 +25,6 @@ PLATFORMS
 DEPENDENCIES
   docverter
   highline
+  httparty
   pygments.rb
   redcarpet

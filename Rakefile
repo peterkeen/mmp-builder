@@ -6,6 +6,7 @@ require 'erb'
 require 'docverter'
 require 'highline'
 require 'json'
+require 'httparty'
 
 desc "Build everything"
 task :build => ['build:pdf', 'build:mobi', 'build:epub']
@@ -39,6 +40,19 @@ class RubySyntaxChecker < Redcarpet::Render::Base
     if language == 'ruby'
       check_ruby(code, code)
       ""
+    end
+  end
+end
+
+class LinkChecker < Redcarpet::Render::Base
+  def link(href, title, content)
+    begin
+      response = HTTParty.head(href)
+      if response.code != 200
+        puts "Error: #{href}: #{response.code}"
+      end
+    rescue Errno::ECONNREFUSED
+      puts "Connection refused: #{href} #{title} #{content}"
     end
   end
 end
@@ -131,6 +145,18 @@ namespace :check do
       end
     end
   end
+
+  desc "Check links"
+  task :links do
+    with_book_dir do
+      Dir.glob("*.md").each do |file|
+        next if file =~ /^_/
+        renderer = Redcarpet::Markdown.new(LinkChecker.new, :fenced_code_blocks => true)
+        renderer.render(File.read(file))
+      end
+    end
+  end
+
 
   desc "Check for any TODO messages"
   task :todos do
@@ -279,5 +305,5 @@ namespace :build do
   end
 end
 
-task :publish => ['check:full', 'build:clean', :build, 'build:upload']
+task :publish => ['check', 'check:links', 'build:clean', :build, 'build:upload']
 
