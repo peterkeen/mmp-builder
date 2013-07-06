@@ -8,9 +8,12 @@ require 'docverter'
 require 'highline'
 require 'json'
 require 'httparty'
+require 'zip/zipfilesystem'
 
 desc "Build everything"
-task :build => ['build:pdf', 'build:mobi', 'build:epub']
+task :build => ['build:html', 'build:pdf', 'build:mobi', 'build:epub', 'build:app']
+task 'build:full' => ['check', 'build:clean', :build]
+task 'package' => ['package:basic', 'package:deluxe']
 
 desc "Basic sanity check"
 task :check => ['check:count_hours', 'check:count', 'check:tics', 'check:todos', 'check:syntax']
@@ -48,6 +51,7 @@ end
 class LinkChecker < Redcarpet::Render::Base
   def link(href, title, content)
     begin
+      return "" unless href =~ /^http/
       response = HTTParty.head(href)
       if response.code != 200
         puts "Error: #{href}: #{response.code}"
@@ -250,8 +254,8 @@ namespace :build do
     end
 
     @raw_contents_hash = Digest::SHA1.hexdigest(@raw_contents)
-
-    FileUtils.mkdir_p("build")
+    @build_dir = "build/#{@raw_contents_hash}"
+    FileUtils.mkdir_p(@build_dir)
   end
 
   task :html => 'build:common' do
@@ -276,7 +280,7 @@ namespace :build do
 
     @content = cover + toc + body
     @html = ERB.new(File.read('site_template.erb')).result(binding)
-    File.open("build/mastering-modern-payments-#{@raw_contents_hash}.html", "w+") do |f|
+    File.open("#{@build_dir}/Mastering Modern Payments.html", "w+") do |f|
       f.write @html
     end
   end
@@ -317,7 +321,7 @@ namespace :build do
     html_hash = Digest::SHA1.hexdigest(@html)
 
 
-    File.open("build/mastering-modern-payments-#{html_hash}.pdf", "w+") do |f|
+    File.open("#{@build_dir}/Mastering Modern Payments.pdf", "w+") do |f|
       pdf = Docverter::Conversion.run do |c|
         c.from    = 'html'
         c.to      = 'pdf'
@@ -334,7 +338,7 @@ namespace :build do
   desc "Build a mobi"
   task :mobi => 'build:common' do
     puts "Building MOBI"
-    File.open("build/mastering-modern-payments-#{@raw_contents_hash}.mobi", "w+") do |f|
+    File.open("#{@build_dir}/Mastering Modern Payments.mobi", "w+") do |f|
       mobi = Docverter::Conversion.run do |c|
         c.from = 'markdown'
         c.to = 'mobi'
@@ -348,7 +352,7 @@ namespace :build do
   desc "Build an epub"
   task :epub => 'build:common' do
     puts "Building EPUB"
-    File.open("build/mastering-modern-payments-#{@raw_contents_hash}.epub", "w+") do |f|
+    File.open("#{@build_dir}/Mastering Modern Payments.epub", "w+") do |f|
       mobi = Docverter::Conversion.run do |c|
         c.from = 'markdown'
         c.to = 'epub'
@@ -359,15 +363,46 @@ namespace :build do
     end
   end
 
-  task :upload do
-    hl = HighLine.new
-    upload_password = hl.ask("Password: ") { |q| q.echo = false }
-    Dir.glob("build/*").each do |file|
-      json = `curl -s -k -u admin:#{upload_password} -F files[]=@#{file} https://files.bugsplat.info/upload`
-      puts JSON.parse(json)['files'][0]['url']
+  desc "Export a zip file of the sales app"
+  task :app => 'build:common' do
+    puts "Exporting source"
+    Dir.chdir(@build_dir) do
+      sh 'git archive --remote git@git.bugsplat.info:peter/sales.git --format zip master -o sales.zip'
     end
   end
 end
 
-task :publish => ['check', 'check:links', 'build:clean', :build, 'build:upload']
 
+def make_zip_file(name, files)
+  Zip::ZipFile.open(name, Zip::ZipFile::CREATE) do |zf|
+    files.each do |file|
+      puts file
+      zf.file.open(file, "w") { |f| f.write File.read(file) }
+    end
+  end
+end
+
+namespace :package do
+  task :basic => 'build:full' do
+    Dir.chdir(@build_dir) do
+      make_zip_file("mastering_modern_payments.zip", [
+          'Mastering Modern Payments.pdf',
+          'Mastering Modern Payments.mobi',
+          'Mastering Modern Payments.epub',
+          'Mastering Modern Payments.html',
+      ])
+    end
+  end
+
+  task :deluxe => 'build:full' do
+    Dir.chdir(@build_dir) do
+      make_zip_file("mastering_modern_payments_deluxe.zip", [
+          'Mastering Modern Payments.pdf',
+          'Mastering Modern Payments.mobi',
+          'Mastering Modern Payments.epub',
+          'Mastering Modern Payments.html',
+          'sales.zip',
+      ])
+    end
+  end
+end

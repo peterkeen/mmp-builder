@@ -18,6 +18,7 @@ GEM
     rest-client (1.6.7)
       mime-types (>= 1.16)
     yajl-ruby (1.1.0)
+    zip (2.0.2)
 
 PLATFORMS
   ruby
@@ -28,3 +29,4 @@ DEPENDENCIES
   httparty
   pygments.rb
   redcarpet
+  zip
