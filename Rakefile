@@ -280,9 +280,12 @@ namespace :build do
 
     @content = cover + toc + body
     @html = ERB.new(File.read('site_template.erb')).result(binding)
-    File.open("#{@build_dir}/Mastering Modern Payments.html", "w+") do |f|
+    FileUtils.mkdir_p(File.join(@build_dir, 'html'))
+    sh "cp assets/* #{@build_dir}/html"
+    File.open("#{@build_dir}/html/Mastering Modern Payments.html", "w+") do |f|
       f.write @html
     end
+
   end
 
   desc "Build a PDF"
@@ -370,6 +373,7 @@ namespace :build do
       sh 'git archive --remote git@git.bugsplat.info:peter/sales.git --format zip master -o sales.zip'
     end
   end
+
 end
 
 
