@@ -380,7 +380,11 @@ end
 def make_zip_file(name, files)
   Zip::ZipFile.open(name, Zip::ZipFile::CREATE) do |zf|
     files.each do |file|
-      puts file
+      if file =~ /\/$/
+        zf.dir.mkdir(file)
+        next
+      end
+
       zf.file.open(file, "w") { |f| f.write File.read(file) }
     end
   end
@@ -393,7 +397,11 @@ namespace :package do
           'Mastering Modern Payments.pdf',
           'Mastering Modern Payments.mobi',
           'Mastering Modern Payments.epub',
-          'Mastering Modern Payments.html',
+          'html/',
+          'html/Mastering Modern Payments.html',
+          'html/Inconsolata-Regular.ttf',
+          'html/Lora-Regular.ttf',
+          'html/droid_sans.ttf',
       ])
     end
   end
@@ -405,6 +413,11 @@ namespace :package do
           'Mastering Modern Payments.mobi',
           'Mastering Modern Payments.epub',
           'Mastering Modern Payments.html',
+          'html/',
+          'html/Mastering Modern Payments.html',
+          'html/Inconsolata-Regular.ttf',
+          'html/Lora-Regular.ttf',
+          'html/droid_sans.ttf',
           'sales.zip',
       ])
     end
