@@ -13,7 +13,7 @@ require 'zip/zipfilesystem'
 desc "Build everything"
 task :build => ['build:html', 'build:pdf', 'build:mobi', 'build:epub', 'build:app']
 task 'build:full' => ['check', 'build:clean', :build]
-task 'package' => ['package:basic', 'package:deluxe']
+task 'package' => ['package:basic', 'package:deluxe', 'package:team']
 
 desc "Basic sanity check"
 task :check => ['check:count_hours', 'check:count', 'check:tics', 'check:todos', 'check:syntax']
@@ -256,6 +256,8 @@ namespace :build do
     @raw_contents_hash = Digest::SHA1.hexdigest(@raw_contents)
     @build_dir = "build/#{@raw_contents_hash}"
     FileUtils.mkdir_p(@build_dir)
+    sh "cp team_license.txt #{@build_dir}"
+    sh "cp copyright.txt #{@build_dir}"
   end
 
   task :html => 'build:common' do
@@ -402,6 +404,7 @@ namespace :package do
           'html/Inconsolata-Regular.ttf',
           'html/Lora-Regular.ttf',
           'html/droid_sans.ttf',
+          'copyright.txt'
       ])
     end
   end
@@ -412,13 +415,31 @@ namespace :package do
           'Mastering Modern Payments.pdf',
           'Mastering Modern Payments.mobi',
           'Mastering Modern Payments.epub',
-          'Mastering Modern Payments.html',
           'html/',
           'html/Mastering Modern Payments.html',
           'html/Inconsolata-Regular.ttf',
           'html/Lora-Regular.ttf',
           'html/droid_sans.ttf',
           'sales.zip',
+          'copyright.txt'
+      ])
+    end
+  end
+
+  task :team => 'build:full' do
+    Dir.chdir(@build_dir) do
+      make_zip_file("mastering_modern_payments_team.zip", [
+          'Mastering Modern Payments.pdf',
+          'Mastering Modern Payments.mobi',
+          'Mastering Modern Payments.epub',
+          'html/',
+          'html/Mastering Modern Payments.html',
+          'html/Inconsolata-Regular.ttf',
+          'html/Lora-Regular.ttf',
+          'html/droid_sans.ttf',
+          'sales.zip',
+          'team_license.txt',
+          'copyright.txt'
       ])
     end
   end

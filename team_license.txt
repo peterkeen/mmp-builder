@@ -1,0 +1,15 @@
+Mastering Modern Payments Team License
+======================================
+
+Thank you for purchasing a team license for Mastering Modern Payments.
+This allows you to share the content with up to 50 team members. 
+
+The content is defined as the PDF, HTML, Mobi, and ePub documents as well
+as the source code for the sales application contained within sales.zip.
+
+A team member is defined as someone with whom you do a substantial amount
+of development work and/or who is employed by the same company as you.
+
+Essentially, I would appreaciate it if you didn't share any of the content
+publically, be it on code sharing sites like Github or torrent sites or
+what have you.

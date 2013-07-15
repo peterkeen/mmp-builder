@@ -1,0 +1,2 @@
+Copyright (c) 2013 by Pete Keen <pete@bugsplat.info>
+All rights reserved
