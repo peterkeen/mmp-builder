@@ -348,6 +348,7 @@ namespace :build do
         c.from = 'markdown'
         c.to = 'mobi'
         c.content = @raw_contents
+        c.add_other_file 'metadata.xml'
       end
 
       f.write mobi
@@ -358,13 +359,14 @@ namespace :build do
   task :epub => 'build:common' do
     puts "Building EPUB"
     File.open("#{@build_dir}/Mastering Modern Payments.epub", "w+") do |f|
-      mobi = Docverter::Conversion.run do |c|
+      epub = Docverter::Conversion.run do |c|
         c.from = 'markdown'
         c.to = 'epub'
         c.content = @raw_contents
+        c.add_other_file 'metadata.xml'
       end
 
-      f.write mobi
+      f.write epub
     end
   end
 
