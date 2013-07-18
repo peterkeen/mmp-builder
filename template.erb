@@ -17,7 +17,7 @@
   }
   @page {
     size: 9in 7in;
-    margin: 10%;
+    margin: 8%;
 
     @bottom-right {
       content: element(footer);
@@ -62,7 +62,6 @@
 
   h1 small {
     font-size: 50%;
-    color: #aaa;
   }
 
   body {
@@ -141,6 +140,11 @@
     -fs-pdf-font-encoding: Identity-H;
   }
 </style>
+<bookmarks>
+  <% @chapters.each_with_index do |chapter, i| %>
+  <bookmark name="<%= chapter %>" href="#chapter<%= (i+1).to_s %>"></bookmark>
+  <% end %>
+</bookmarks>
 </head>
 <body>
 <div class="page_footer"><span class="page_number"></span></div>

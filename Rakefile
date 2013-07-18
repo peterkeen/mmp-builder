@@ -67,7 +67,7 @@ class HTMLWithChapterNumberingAndPygments < Redcarpet::Render::HTML
     if header_level == 1
       @counter ||= 0
       @counter += 1
-      "<h1 id=\"chapter_#{@counter}\"><small>Chapter #{@counter}</small><br>#{text}</h1>\n"
+      "<h1 id=\"chapter#{@counter}\"><small>Chapter #{@counter}</small><br>#{text}</h1>\n"
     else
       "<h#{header_level}>#{text}</h#{header_level}>\n"
     end
@@ -82,6 +82,8 @@ class HTMLWithChapterNumberingAndPygments < Redcarpet::Render::HTML
 end
 
 class TOCWithChapterNumbering < Redcarpet::Render::StripDown
+  attr_reader :chapters
+
   def header(text, header_level)
     return unless header_level == 1
     @chapters ||= []
@@ -92,7 +94,7 @@ class TOCWithChapterNumbering < Redcarpet::Render::StripDown
   def postprocess(document)
     items = []
     @chapters.each_with_index do |text, i|
-      items << "  <li><a href=\"#chapter_#{(i+1).to_s}\">#{text}</a></li>"
+      items << "  <li><a href=\"#chapter#{(i+1).to_s}\">#{text}</a></li>"
     end
     return <<HERE
 <ol>
@@ -240,7 +242,6 @@ namespace :build do
   task "Common build setup"
   task :common do
     puts "Setting up common stuff"
-    Docverter.base_url = 'http://c.docverter.com'
 
     @raw_contents = ""
 
@@ -293,7 +294,6 @@ namespace :build do
   desc "Build a PDF"
   task :pdf => 'build:common' do
     puts "Building PDF"
-    Docverter.base_url = 'http://c.docverter.com'
 
     renderer = Redcarpet::Markdown.new(
       HTMLWithChapterNumberingAndPygments.new(:with_toc_data => true),
@@ -301,9 +301,8 @@ namespace :build do
       :tables => true,
     )
 
-    toc_renderer = Redcarpet::Markdown.new(
-      TOCWithChapterNumbering
-    )
+    toc_numberer = TOCWithChapterNumbering.new
+    toc_renderer = Redcarpet::Markdown.new(toc_numberer)
 
     body = renderer.render(@raw_contents)
     toc = toc_renderer.render(@raw_contents).gsub('&#39;', "'")
@@ -321,10 +320,9 @@ namespace :build do
       @content = cover + "<h1>Table of Contents</h1>" + toc + body
     end
 
+    @chapters = toc_numberer.chapters
     @html = ERB.new(File.read('template.erb')).result(binding)
-
     html_hash = Digest::SHA1.hexdigest(@html)
-
 
     File.open("#{@build_dir}/Mastering Modern Payments.pdf", "w+") do |f|
       pdf = Docverter::Conversion.run do |c|
