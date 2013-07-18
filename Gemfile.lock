@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    docverter (0.0.7)
+    docverter (1.0.0)
       rest-client (~> 1.6.7)
     highline (1.6.19)
     httparty (0.11.0)
