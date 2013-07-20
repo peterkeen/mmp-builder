@@ -8,8 +8,8 @@
     display: block;
     text-align: center;
     font-size: 80%;
-    color: #333;
-    font-family: 'Lora';
+    color: #555;
+    font-family: 'Droid Sans';
     position: running(footer);
   }
   div.page_footer .page_number:after {
@@ -17,7 +17,7 @@
   }
   @page {
     size: 9in 7in;
-    margin: 8%;
+    margin: 0.75in;
 
     @bottom-right {
       content: element(footer);
@@ -30,7 +30,6 @@
 
   @page :first {
     size: 9in 7in;
-    margin: 10%;
 
     @bottom-right {
       content: "";
@@ -39,10 +38,6 @@
     @bottom-left {
       content: "";
     }
-  }
-
-  .cover {
-    page-break-after: always;
   }
 
   h2,h3,h4 {
@@ -62,6 +57,7 @@
 
   h1 small {
     font-size: 50%;
+    color: #ccc;
   }
 
   body {
@@ -99,19 +95,20 @@
   .cover .title {
     font-family: helvetica, arial, sans-serif;
     border-bottom: 1px solid #CCC;
-    padding-bottom: 0.5em;
+    padding-bottom: 0.25em;
     font-size: 2em;
+    margin-bottom: 0.25em;
   }
 
   .cover .subtitle {
-    font-family: helvetica, arial, sans-serif;
+    font-family: 'Droid Sans', helvetica, arial, sans-serif;
     font-size: 1.5em;
   }
 
   .cover .author {
     font-family: 'Droid Sans', helvetica, arial, sans-serif;
     font-size: 1.5em;
-    padding-top: 1em;
+    padding-top: 3em;
   }
   <%= Pygments.css %>
 

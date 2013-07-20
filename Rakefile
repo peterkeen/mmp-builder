@@ -346,7 +346,11 @@ namespace :build do
         c.from = 'markdown'
         c.to = 'mobi'
         c.content = @raw_contents
+        c.epub_metadata = 'metadata.xml'
+        c.epub_cover_image = 'mastering_modern_payments_cover.png'
+        c.add_other_file 'assets/card_form.png'
         c.add_other_file 'metadata.xml'
+        c.add_other_file 'assets/mastering_modern_payments_cover.png'
       end
 
       f.write mobi
@@ -361,7 +365,11 @@ namespace :build do
         c.from = 'markdown'
         c.to = 'epub'
         c.content = @raw_contents
+        c.epub_metadata = 'metadata.xml'
+        c.epub_cover_image = 'mastering_modern_payments_cover.png'
+        c.add_other_file 'assets/card_form.png'
         c.add_other_file 'metadata.xml'
+        c.add_other_file 'assets/mastering_modern_payments_cover.png'
       end
 
       f.write epub
@@ -404,6 +412,8 @@ namespace :package do
           'html/Inconsolata-Regular.ttf',
           'html/Lora-Regular.ttf',
           'html/droid_sans.ttf',
+          'html/mastering_modern_payments_cover.png',
+          'html/card_form.png',
           'copyright.txt'
       ])
     end
@@ -420,6 +430,8 @@ namespace :package do
           'html/Inconsolata-Regular.ttf',
           'html/Lora-Regular.ttf',
           'html/droid_sans.ttf',
+          'html/mastering_modern_payments_cover.png',
+          'html/card_form.png',
           'sales.zip',
           'copyright.txt'
       ])
@@ -437,6 +449,8 @@ namespace :package do
           'html/Inconsolata-Regular.ttf',
           'html/Lora-Regular.ttf',
           'html/droid_sans.ttf',
+          'html/mastering_modern_payments_cover.png',
+          'html/card_form.png',
           'sales.zip',
           'team_license.txt',
           'copyright.txt'
