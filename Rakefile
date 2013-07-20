@@ -349,6 +349,7 @@ namespace :build do
         c.epub_metadata = 'metadata.xml'
         c.epub_cover_image = 'mastering_modern_payments_cover.png'
         c.add_other_file 'assets/card_form.png'
+        c.add_other_file 'assets/history_table.png'
         c.add_other_file 'metadata.xml'
         c.add_other_file 'assets/mastering_modern_payments_cover.png'
       end
@@ -368,6 +369,7 @@ namespace :build do
         c.epub_metadata = 'metadata.xml'
         c.epub_cover_image = 'mastering_modern_payments_cover.png'
         c.add_other_file 'assets/card_form.png'
+        c.add_other_file 'assets/history_table.png'
         c.add_other_file 'metadata.xml'
         c.add_other_file 'assets/mastering_modern_payments_cover.png'
       end
@@ -414,6 +416,7 @@ namespace :package do
           'html/droid_sans.ttf',
           'html/mastering_modern_payments_cover.png',
           'html/card_form.png',
+          'html/history_table.png',
           'copyright.txt'
       ])
     end
@@ -432,6 +435,7 @@ namespace :package do
           'html/droid_sans.ttf',
           'html/mastering_modern_payments_cover.png',
           'html/card_form.png',
+          'html/history_table.png',
           'sales.zip',
           'copyright.txt'
       ])
