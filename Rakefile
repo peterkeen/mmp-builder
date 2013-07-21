@@ -242,6 +242,7 @@ namespace :build do
   task "Common build setup"
   task :common do
     puts "Setting up common stuff"
+    Docverter.base_url = 'http://localhost:9292'
 
     @raw_contents = ""
 
