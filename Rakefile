@@ -23,7 +23,7 @@ desc "Sanity checks plus syntax check"
 task :default => :check
 
 def with_book_dir
-  Dir.chdir("/Users/peter/book") do
+  Dir.chdir("/Users/peter/devel/mastering_modern_payments") do
     yield
   end
 end
