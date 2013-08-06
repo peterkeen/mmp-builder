@@ -349,8 +349,10 @@ namespace :build do
         c.content = @raw_contents
         c.epub_metadata = 'metadata.xml'
         c.epub_cover_image = 'mastering_modern_payments_cover.png'
+        c.epub_stylesheet = 'epub_stylesheet.css'
         c.add_other_file 'assets/card_form.png'
         c.add_other_file 'assets/history_table.png'
+        c.add_other_file 'assets/epub_stylesheet.css'
         c.add_other_file 'metadata.xml'
         c.add_other_file 'assets/mastering_modern_payments_cover.png'
       end
@@ -369,7 +371,9 @@ namespace :build do
         c.content = @raw_contents
         c.epub_metadata = 'metadata.xml'
         c.epub_cover_image = 'mastering_modern_payments_cover.png'
+        c.epub_stylesheet = 'epub_stylesheet.css'
         c.add_other_file 'assets/card_form.png'
+        c.add_other_file 'assets/epub_stylesheet.css'
         c.add_other_file 'assets/history_table.png'
         c.add_other_file 'metadata.xml'
         c.add_other_file 'assets/mastering_modern_payments_cover.png'
