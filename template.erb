@@ -30,6 +30,8 @@
 
   @page :first {
     size: 9in 7in;
+    margin: 0in;
+    padding: 0in;
 
     @bottom-right {
       content: "";
@@ -38,7 +40,13 @@
     @bottom-left {
       content: "";
     }
+
+    body {
+      margin: 0in;
+      padding: 0in;
+    }
   }
+
 
   h2,h3,h4 {
     page-break-after: avoid;

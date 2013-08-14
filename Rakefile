@@ -348,13 +348,13 @@ namespace :build do
         c.to = 'mobi'
         c.content = @raw_contents
         c.epub_metadata = 'metadata.xml'
-        c.epub_cover_image = 'mastering_modern_payments_cover.png'
+        c.epub_cover_image = 'cover.png'
         c.epub_stylesheet = 'epub_stylesheet.css'
         c.add_other_file 'assets/card_form.png'
         c.add_other_file 'assets/history_table.png'
         c.add_other_file 'assets/epub_stylesheet.css'
         c.add_other_file 'metadata.xml'
-        c.add_other_file 'assets/mastering_modern_payments_cover.png'
+        c.add_other_file 'assets/cover.png'
       end
 
       f.write mobi
@@ -370,13 +370,13 @@ namespace :build do
         c.to = 'epub'
         c.content = @raw_contents
         c.epub_metadata = 'metadata.xml'
-        c.epub_cover_image = 'mastering_modern_payments_cover.png'
+        c.epub_cover_image = 'cover.png'
         c.epub_stylesheet = 'epub_stylesheet.css'
         c.add_other_file 'assets/card_form.png'
         c.add_other_file 'assets/epub_stylesheet.css'
         c.add_other_file 'assets/history_table.png'
         c.add_other_file 'metadata.xml'
-        c.add_other_file 'assets/mastering_modern_payments_cover.png'
+        c.add_other_file 'assets/cover.png'
       end
 
       f.write epub
@@ -419,7 +419,7 @@ namespace :package do
           'html/Inconsolata-Regular.ttf',
           'html/Lora-Regular.ttf',
           'html/droid_sans.ttf',
-          'html/mastering_modern_payments_cover.png',
+          'html/cover.png',
           'html/card_form.png',
           'html/history_table.png',
           'copyright.txt'
@@ -438,7 +438,7 @@ namespace :package do
           'html/Inconsolata-Regular.ttf',
           'html/Lora-Regular.ttf',
           'html/droid_sans.ttf',
-          'html/mastering_modern_payments_cover.png',
+          'html/cover.png',
           'html/card_form.png',
           'html/history_table.png',
           'sales.zip',
@@ -458,7 +458,7 @@ namespace :package do
           'html/Inconsolata-Regular.ttf',
           'html/Lora-Regular.ttf',
           'html/droid_sans.ttf',
-          'html/mastering_modern_payments_cover.png',
+          'html/cover.png',
           'html/card_form.png',
           'sales.zip',
           'team_license.txt',
