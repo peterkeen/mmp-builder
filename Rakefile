@@ -311,14 +311,14 @@ namespace :build do
     cover_sample = ""
 
     with_book_dir do
-      cover = File.read('_cover.md')
+      cover = File.read('_pdf_cover.md')
       cover_sample = File.read('_cover_sample.md')
     end
 
     if ENV['chapter']
       @content = cover_sample + body
     else
-      @content = cover + "<h1>Table of Contents</h1>" + toc + body
+      @content = cover + '<h1>Table of Contents</h1>' + toc + body
     end
 
     @chapters = toc_numberer.chapters
