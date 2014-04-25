@@ -13,7 +13,7 @@ require 'zip/zipfilesystem'
 desc "Build everything"
 task :build => ['build:html', 'build:pdf', 'build:mobi', 'build:epub', 'build:app']
 task 'build:full' => ['check', 'build:clean', :build]
-task 'package' => ['package:basic', 'package:deluxe', 'package:team']
+task 'package' => ['package:basic', 'package:deluxe', 'package:team', 'package:audit']
 
 desc "Basic sanity check"
 task :check => ['check:count_hours', 'check:count', 'check:tics', 'check:todos', 'check:syntax']
@@ -242,7 +242,7 @@ namespace :build do
   task "Common build setup"
   task :common do
     puts "Setting up common stuff"
-    Docverter.base_url = 'http://localhost:9292'
+    Docverter.base_url = 'http://localhost:9595'
 
     @raw_contents = ""
 
@@ -259,6 +259,7 @@ namespace :build do
     @build_dir = "build/#{@raw_contents_hash}"
     FileUtils.mkdir_p(@build_dir)
     sh "cp team_license.txt #{@build_dir}"
+    sh "cp audit_terms.txt #{@build_dir}"
     sh "cp copyright.txt #{@build_dir}"
   end
 
@@ -407,62 +408,50 @@ def make_zip_file(name, files)
   end
 end
 
+BASIC_FILES = [
+  'Mastering Modern Payments.pdf',
+  'Mastering Modern Payments.mobi',
+  'Mastering Modern Payments.epub',
+  'html/',
+  'html/Mastering Modern Payments.html',
+  'html/Inconsolata-Regular.ttf',
+  'html/Lora-Regular.ttf',
+  'html/droid_sans.ttf',
+  'html/cover.png',
+  'html/card_form.png',
+  'html/history_table.png',
+  'copyright.txt'
+]
+
 namespace :package do
   task :basic => 'build:full' do
     Dir.chdir(@build_dir) do
-      make_zip_file("mastering_modern_payments.zip", [
-          'Mastering Modern Payments.pdf',
-          'Mastering Modern Payments.mobi',
-          'Mastering Modern Payments.epub',
-          'html/',
-          'html/Mastering Modern Payments.html',
-          'html/Inconsolata-Regular.ttf',
-          'html/Lora-Regular.ttf',
-          'html/droid_sans.ttf',
-          'html/cover.png',
-          'html/card_form.png',
-          'html/history_table.png',
-          'copyright.txt'
-      ])
+      make_zip_file("mastering_modern_payments.zip", BASIC_FILES)
     end
   end
 
   task :deluxe => 'build:full' do
     Dir.chdir(@build_dir) do
-      make_zip_file("mastering_modern_payments_deluxe.zip", [
-          'Mastering Modern Payments.pdf',
-          'Mastering Modern Payments.mobi',
-          'Mastering Modern Payments.epub',
-          'html/',
-          'html/Mastering Modern Payments.html',
-          'html/Inconsolata-Regular.ttf',
-          'html/Lora-Regular.ttf',
-          'html/droid_sans.ttf',
-          'html/cover.png',
-          'html/card_form.png',
-          'html/history_table.png',
-          'sales.zip',
-          'copyright.txt'
+      make_zip_file("mastering_modern_payments_deluxe.zip", BASIC_FILES + [
+        'sales.zip',
       ])
     end
   end
 
   task :team => 'build:full' do
     Dir.chdir(@build_dir) do
-      make_zip_file("mastering_modern_payments_team.zip", [
-          'Mastering Modern Payments.pdf',
-          'Mastering Modern Payments.mobi',
-          'Mastering Modern Payments.epub',
-          'html/',
-          'html/Mastering Modern Payments.html',
-          'html/Inconsolata-Regular.ttf',
-          'html/Lora-Regular.ttf',
-          'html/droid_sans.ttf',
-          'html/cover.png',
-          'html/card_form.png',
-          'sales.zip',
-          'team_license.txt',
-          'copyright.txt'
+      make_zip_file("mastering_modern_payments_team.zip", BASIC_FILES + [
+        'sales.zip',
+        'team_license.txt',
+      ])
+    end
+  end
+
+  task :audit => 'build:full' do
+    Dir.chdir(@build_dir) do
+      make_zip_file("mastering_modern_payments_audit.zip", BASIC_FILES + [
+        'sales.zip',
+        'audit_terms.txt',
       ])
     end
   end
