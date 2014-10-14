@@ -2,7 +2,7 @@ Mastering Modern Payments Team License
 ======================================
 
 Thank you for purchasing a team license for Mastering Modern Payments.
-This allows you to share the content with up to 50 team members. 
+This allows you to share the content with up to 10 team members. 
 
 The content is defined as the PDF, HTML, Mobi, and ePub documents as well
 as the source code for the sales application contained within sales.zip.

@@ -28,6 +28,36 @@ def with_book_dir
   end
 end
 
+class Page
+  attr_reader :root, :name, :headers, :body
+
+  def self.path(root, name)
+    File.join(root, name + '.md')
+  end
+  
+  def initialize(root, name)
+    @root = root
+    @name = name
+    parse_page
+  end
+
+  def parse_page
+    if contents =~ /\A(---\s*\n.*?\n?)^(---\s*$\n?)(.*)/m
+      @headers = YAML.load($1)
+      @body = $3
+    else
+      @headers = {}
+      @body = contents
+    end
+  end
+
+  def contents
+    @contents ||= File.open(self.class.path(root, name), 'r:utf-8') do |file|
+      file.read
+    end
+  end
+end
+
 class RubySyntaxChecker < Redcarpet::Render::Base
 
   attr_reader :failed
@@ -250,7 +280,13 @@ namespace :build do
       chapters = File.read('chapters').split("\n")
       chapters.each do |chapter|
         next if ENV['chapter'] && chapter != ENV['chapter']
-        @raw_contents << File.read(chapter + ".md")
+        page = Page.new('.', chapter)
+        contents = "# #{page.headers['title']}\n\n"
+        (page.headers['bullets'] || []).each do |bullet|
+          contents << "* #{bullet}\n"
+        end
+        contents << "\n\n" + page.body
+        @raw_contents << contents
         @raw_contents << "\n\n"
       end
     end
