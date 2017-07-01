@@ -11,12 +11,12 @@ require 'httparty'
 require 'zip/zipfilesystem'
 
 desc "Build everything"
-task :build => ['build:html', 'build:pdf', 'build:mobi', 'build:epub', 'build:app']
+task :build => ['build:pdf', 'build:mobi', 'build:epub', 'build:app']
 task 'build:full' => ['check', 'build:clean', :build]
 task 'package' => ['package:basic', 'package:deluxe', 'package:team', 'package:audit']
 
 desc "Basic sanity check"
-task :check => ['check:count_hours', 'check:count', 'check:tics', 'check:todos', 'check:syntax']
+task :check => ['check:count_hours', 'check:count', 'check:tics', 'check:todos', 'check:syntax', 'check:spelling']
 
 desc "Sanity checks plus syntax check"
 
@@ -102,12 +102,30 @@ class HTMLWithChapterNumberingAndPygments < Redcarpet::Render::HTML
       "<h#{header_level}>#{text}</h#{header_level}>\n"
     end
   end
+
   def block_code(code, language)
     Pygments.highlight(code, :lexer => language)
   end
 
   def postprocess(document)
-    document.gsub('&#39;', "'")
+    doc = document.gsub('&#39;', "'")
+    with_book_dir do
+      chapters = File.read('chapters').split("\n")
+
+      doc = doc.gsub(/"\/read\/(\w+)"/) do |match|
+        chapter_link = $1
+        chapter_index = nil
+
+        chapters.each_with_index do |text, index|
+          next unless chapter_link == text
+          chapter_index = index + 1
+        end
+
+        "\"#chapter#{chapter_index}\""
+      end
+    end
+
+    doc
   end
 end
 
@@ -261,6 +279,29 @@ namespace :check do
       end
     end
   end
+
+  desc "Check spelling with aspell"
+  task :spelling do
+    count = 0
+    with_book_dir do
+      Dir.glob('*.md').each do |file|
+        next if file =~ /^_/
+
+        misspellings = `cat #{file} | aspell list`.strip
+
+        if misspellings != ''
+          puts "Misspellings in #{file}:"
+          puts misspellings
+          count += 1
+        end
+      end
+
+      if count > 0
+        exit 1
+      end
+      puts "Spelling checks out"
+    end
+  end
 end
 
 namespace :build do
@@ -272,7 +313,8 @@ namespace :build do
   task "Common build setup"
   task :common do
     puts "Setting up common stuff"
-    Docverter.base_url = 'http://localhost:9595'
+    Docverter.base_url = 'http://docverter.zrail.net'
+    Docverter.api_key = 'bookbuilder'
 
     @raw_contents = ""
 
@@ -301,18 +343,22 @@ namespace :build do
 
   task :html => 'build:common' do
     puts "Building HTML"
+    toc_thingy = TOCWithChapterNumbering.new
+
+    toc_renderer = Redcarpet::Markdown.new(
+      toc_thingy
+    )
+
+    toc = toc_renderer.render(@raw_contents)
+
     renderer = Redcarpet::Markdown.new(
-      HTMLWithChapterNumberingAndPygments.new,
+      HTMLWithChapterNumberingAndPygments,
       :fenced_code_blocks => true,
       :tables => true,
     )
 
-    toc_renderer = Redcarpet::Markdown.new(
-      TOCWithChapterNumbering
-    )
-
     body = renderer.render(@raw_contents)
-    toc = toc_renderer.render(@raw_contents)
+
     cover = ""
 
     with_book_dir do

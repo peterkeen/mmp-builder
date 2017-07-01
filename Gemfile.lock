@@ -37,3 +37,6 @@ DEPENDENCIES
   rake
   redcarpet
   zip
+
+BUNDLED WITH
+   1.10.1
